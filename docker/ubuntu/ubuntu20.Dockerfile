@@ -14,10 +14,14 @@ RUN apt-get install -y \
 
 # Install Relay dependencies
 RUN apt-get install -y \
+  libck0 \
   php-msgpack \
   php-igbinary
 
 ARG RELAY=v0.7.0
+
+RUN curl -L https://github.com/redis/hiredis/archive/refs/tags/v1.2.0.tar.gz | tar -xzC /usr/src \
+  && PREFIX=/usr USE_SSL=1 make -C /usr/src/hiredis-1.2.0 install
 
 # Download Relay
 RUN ARCH=$(uname -m | sed 's/_/-/') \
