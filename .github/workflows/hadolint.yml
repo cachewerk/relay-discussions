@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+
+name: "Docker"
+
+on:
+    pull_request:
+        paths:
+        - "**/Dockerfile"
+        - ".hadolint.yaml"
+    push:
+        branches:
+        - "main"
+        paths:
+        - "**/Dockerfile"
+        - ".hadolint.yaml"
+
+permissions:
+    contents: "read"
+
+concurrency:
+    group: "${{ github.workflow }}-${{ github.ref }}"
+    cancel-in-progress: true
+
+jobs:
+    hadolint:
+        name: "🐳 Hadolint"
+        runs-on: "ubuntu-22.04"
+        timeout-minutes: 1
+        steps:
+        -
+            name: "Checkout repository"
+            uses: "actions/checkout@v3"
+        -
+            name: "Check Dockerfiles"
+            uses: "hadolint/hadolint-action@v3.1.0"
+            with:
+                dockerfile: "*.Dockerfile"
+                recursive: true
